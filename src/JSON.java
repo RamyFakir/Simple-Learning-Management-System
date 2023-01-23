@@ -39,7 +39,7 @@ public class JSON extends Student implements CoursesData{
             obj.put(1, enrolledCourses1);
             obj.put(2, enrolledCourses2);
             obj.put(3, enrolledCourses3);
-            //enrolledCourses2.remove(1);
+             //enrolledCourses2.remove(1);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,33 +55,50 @@ public class JSON extends Student implements CoursesData{
          return jsonFile.getPath();
     }
     public String enrollmentRequest(String studentID, String courseID) {
+        // read the existing data first to check if the student reached the max no. of courses
         File jsonFile = new File("Student course details.json");
-        FileWriter writeToJsonFile = null;
-        JSONObject obj = new JSONObject();
+        JSONParser parser = new JSONParser();
+        int counter=0;
+        String feedback="";
         try {
-            writeToJsonFile = new FileWriter(jsonFile);
-          JSONArray course = new JSONArray();
+            Object object = parser.parse(new FileReader(jsonFile));
+            JSONObject obj = (JSONObject) object;
+            JSONArray enrolledCourses = (JSONArray) obj.get(studentID);
+            Iterator <Integer> iterator = enrolledCourses.iterator();
 
-            course.add(courseID);
+            while (iterator.hasNext()) {
+                 iterator.next();
+                 counter++;
+            }
 
-            obj.put(studentID, course);
+            // if the number of courses < 6 he can enroll
+            if (counter<6) {
+                try {
+                    FileWriter writeToJsonFile = new FileWriter(jsonFile);
+                    enrolledCourses.add(courseID);
+                    obj.put(studentID, enrolledCourses);
+                    writeToJsonFile.write(obj.toJSONString());
+                    writeToJsonFile.flush();
+                    writeToJsonFile.close();
+                    feedback = "enrolled";
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
 
+            }
+            else{
+                System.err.println("Students can’t enroll in more than 6 programs at the same time.");
+                feedback = "not allowed";
+            }
+          //enrolledCourses2.remove(1);
 
-
-            //enrolledCourses2.remove(1);
-
-        } catch (IOException e) {
+        }  catch (ParseException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                assert writeToJsonFile != null;
-                writeToJsonFile.write(obj.toJSONString());
-                writeToJsonFile.flush();
-            } catch (IOException e) {
+        }  catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-        return jsonFile.getPath();
+
+        return feedback;
     }
     public  void getSpecificCourseData(int courseID) {
         // creating an array of Course objects and fill each Course with the proper data
