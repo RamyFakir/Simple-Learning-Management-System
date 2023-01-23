@@ -1,13 +1,9 @@
 import java.io.*;
 import java.util.Scanner;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import javax.lang.model.element.NestingKind;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
     	// Read the student data from (txt)file , arrange it and convert it to a (csv) file
     	StudentData studentData =new StudentData();
@@ -21,19 +17,19 @@ public class Main {
 
 		// creating an array of Student objects and fill each object with the proper data
 		Student student =new Student();
-		student.fillStudentObjectsWithData(studentDataWithIdPath);
+		Student.fillStudentObjectsWithData(studentDataWithIdPath);
 
 
 		 // Read the Courses data from (xml)file , arrange it and convert it to a (csv) file
     	CoursesData readCourseData = new Courses();
-		String courseDatacsvFilePath = readCourseData.readCourseDataFromXML("course_data.xml");
+		String courseDatacsvFilePath = readCourseData.readCourseDataFromXML("coursedata.xml");
 
 		// creating an array of Course objects and fill each Course with the proper data
 		readCourseData.fillCourseObjectsWithData(courseDatacsvFilePath);
 
 		// Craete a JSON file and put sample data
 		JSON jsonFile =new JSON();
-		String jsonFilePath = jsonFile.createJSONFile();
+		jsonFile.createJSONFile();
 
 
 
@@ -80,7 +76,7 @@ public class Main {
 
 
 
-    }
+}
 
 
 

@@ -34,7 +34,9 @@ public class Courses implements CoursesData{
 			scanner = new Scanner (file1);
 
 			while (scanner.hasNextLine()) {
-				course=scanner.nextLine().replace(",",".").replace("<root>","")
+				course=scanner.nextLine()
+						.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>","")
+						.replace(",",".").replace("<root>","")
 						.replace("</root>","")
 						.replace("<row>","").replace("</row>","")
 						.replace("<id>","").replace("</id>",",")
@@ -42,7 +44,7 @@ public class Courses implements CoursesData{
 						.replace("<Instructor>","").replace("</Instructor>",",")
 						.replace("<CourseDuration>","").replace("</CourseDuration>",",")
 						.replace("<CourseTime>","").replace("</CourseTime>",",")
-						.replace("<Location>","").replace("</Location>","\n");
+						.replace("<Location>","").replace("</Location>","\n").replace(" ","");
 				//System.out.println(course);
 				writer.write(course);
 			}
@@ -79,12 +81,13 @@ public class Courses implements CoursesData{
 			}
 
 			 course =new Courses[numberOfLines];
-			String nextLine = courseScanner.nextLine();
+			String nextLine = null;
 			while ( courseScanner.hasNextLine()) {
-				i++;
 				nextLine = courseScanner.nextLine();
 				String[] row = nextLine.split(",");
 				course[i] = new Courses(Integer.parseInt(row[0]), row[1], row[2], row[3], row[4],row[5]);
+				//System.out.println(course[i]);
+				i++;
 			}
 			//printing sample value
 			// System.out.println(course[10].toString());
@@ -107,18 +110,19 @@ public class Courses implements CoursesData{
 		try {
 			readFromCVS = new FileReader(file);
 			readBuf = new BufferedReader(readFromCVS);
-			line = readBuf.readLine();
+			line = "";
 			Scanner scanner =new Scanner(file);
 			System.out.println("Enrollment page");
 			System.out.println("=======================================================================================");
 			String[] row = null;
 			System.out.println("id,      course name,                 instructor,         Course duration ,    Course time,        location ");
 			System.out.println("---------------------------------------------------------------------------------------");
-			line = readBuf.readLine();
+
 			while (scanner.hasNextLine()) {
 			    scanner.nextLine();
 				numberOfCourses++;
 			}
+			line = readBuf.readLine();
 			while (line != null) {
 				row = line.split(",");
 
@@ -154,9 +158,13 @@ public class Courses implements CoursesData{
 				for (int i = 1; i <= numberOfCourses; i++) {
 					if (Integer.parseInt(action) == i) {
 						JSON request = new JSON();
-						request.enrollmentRequest(studentID,action);
+						String feedback = request.enrollmentRequest(studentID,action);
+						if (feedback.equals("enrolled")){
 						System.out.println("The student is Enrolled Successfully in the " +  this.course[Integer.parseInt(action)-1].name + " course");
-						break;
+						break;}
+						else {
+							break;
+						}
 					}
 				}
   				if (Integer.parseInt(action) > numberOfCourses || Integer.parseInt(action) < 1) {
