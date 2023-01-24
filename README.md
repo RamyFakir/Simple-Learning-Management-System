@@ -4,4 +4,4 @@
 - &nbsp; Enroll in a course
 - &nbsp; Unenrollfrom an existing course
 - &nbsp; Replacing an existing course
-- &nbsp; Back to the main page
+
