@@ -7,9 +7,8 @@ import java.io.*;
 import java.util.Iterator;
 import java.util.Scanner;
 
-import static java.util.Spliterators.iterator;
-
-public class JSON extends Student implements CoursesData{
+//implements CoursesData
+public class JSON extends Student {
 
     public String createJSONFile() {
         File jsonFile = new File("Student course details.json");
@@ -22,7 +21,6 @@ public class JSON extends Student implements CoursesData{
             JSONArray enrolledCourses1 = new JSONArray();
             JSONArray enrolledCourses2 = new JSONArray();
             JSONArray enrolledCourses3 = new JSONArray();
-
             enrolledCourses1.add(1);
             enrolledCourses1.add(2);
             enrolledCourses1.add(3);
@@ -33,13 +31,14 @@ public class JSON extends Student implements CoursesData{
             enrolledCourses2.add(6);
 
             enrolledCourses3.add(1);
+            enrolledCourses3.add(2);
             enrolledCourses3.add(3);
-            enrolledCourses3.add(5);
 
             obj.put(1, enrolledCourses1);
+            
             obj.put(2, enrolledCourses2);
             obj.put(3, enrolledCourses3);
-             //enrolledCourses2.remove(1);
+             
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,6 +57,7 @@ public class JSON extends Student implements CoursesData{
         // read the existing data first to check if the student reached the max no. of courses
         File jsonFile = new File("Student course details.json");
         JSONParser parser = new JSONParser();
+        String buffer ="";
         int counter=0;
         String feedback="";
         try {
@@ -67,12 +67,15 @@ public class JSON extends Student implements CoursesData{
             Iterator <Integer> iterator = enrolledCourses.iterator();
 
             while (iterator.hasNext()) {
-                 iterator.next();
+                buffer = String.valueOf(iterator.next());
                  counter++;
             }
-
+            if (buffer.contains(courseID)){
+                System.err.println("The student can't enroll in the same course more than one time");
+                feedback = "not allowed";
+            }
             // if the number of courses < 6 he can enroll
-            if (counter<6) {
+            else if (counter<6) {
                 try {
                     FileWriter writeToJsonFile = new FileWriter(jsonFile);
                     enrolledCourses.add(courseID);
@@ -100,6 +103,58 @@ public class JSON extends Student implements CoursesData{
 
         return feedback;
     }
+    public String unenrollmentRequest(String studentID, String courseID) {
+        // read the existing data first to check if the student reached the max no. of courses
+        File jsonFile = new File("Student course details.json");
+        JSONParser parser = new JSONParser();
+        int bufferID =0;
+        String buffer ="";
+        int counter=0;
+        String feedback="";
+        try {
+            Object object = parser.parse(new FileReader(jsonFile));
+            JSONObject obj = (JSONObject) object;
+            JSONArray enrolledCourses = (JSONArray) obj.get(studentID);
+            Iterator <Integer> iterator = enrolledCourses.iterator();
+
+            while (iterator.hasNext()) {
+                buffer = String.valueOf(iterator.next());
+                if (buffer.equals((Object)courseID)){
+                    bufferID = counter;
+                }
+                counter++;  
+            }
+
+             if (counter>1) {
+                try {
+                    FileWriter writeToJsonFile = new FileWriter(jsonFile);
+                    //obj.remove(studentID, );
+                    enrolledCourses.remove(bufferID);
+                    writeToJsonFile.write(obj.toJSONString());
+                    writeToJsonFile.flush();
+                    writeToJsonFile.close();
+                    feedback = "unenrolled";
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+
+            }
+            else{
+                System.err.println("Faild to unenroll: The student as only one or no courses to unenroll from");
+                feedback = "not allowed";
+            }
+          //
+
+        }  catch (ParseException e) {
+            e.printStackTrace();
+        }  catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        return feedback;
+    }
+
+
     public  void getSpecificCourseData(int courseID) {
         // creating an array of Course objects and fill each Course with the proper data
         File readCourseData = new File("course_data_sorted.csv");
@@ -119,9 +174,9 @@ public class JSON extends Student implements CoursesData{
             String nextLine = courseScanner.nextLine();
             while ( courseScanner.hasNextLine()) {
                 i++;
-                nextLine = courseScanner.nextLine();
                 String[] row = nextLine.split(",");
-                course[i] = new Courses(Integer.parseInt(row[0])-1, row[1], row[2], row[3], row[4],row[5]);
+                course[i] = new Courses(Integer.parseInt(row[0]), row[1], row[2], row[3], row[4],row[5]);
+                nextLine = courseScanner.nextLine();
             }
             //printing sample value
             System.out.println(course[courseID].toString());
@@ -168,6 +223,7 @@ public class JSON extends Student implements CoursesData{
                     getSpecificCourseData(Integer.parseInt(s));
 
                 }
+                System.out.println("--------------------------------------------------------------------------");
             } else {
                 System.out.println("==========================================================================");
                 System.out.println("Student details page");

@@ -37,40 +37,52 @@ public class Main {
 			int numberOfStudents =studentData.homePage();
 			// Get Student id to show its data
 			System.out.println("Please select the required student: ");
-			Scanner scanner = new Scanner(System.in);
-			String studentID= scanner.next();
-			while (Integer.parseInt(studentID)>numberOfStudents ||Integer.parseInt(studentID)<1 ){
-				System.err.println("Invalid Student ID");
-				studentID= scanner.next();
+			try  {
+				Scanner scanner = new Scanner(System.in);
+				String studentID= scanner.next();
+				while (Integer.parseInt(studentID)>numberOfStudents ||Integer.parseInt(studentID)<1 ){
+					System.err.println("Invalid Student ID");
+					studentID= scanner.next();
 
-			}
-			jsonFile.enrolledCoursesInfo(studentID);
+				}
+				jsonFile.enrolledCoursesInfo(studentID);
 
-			// Getting input from below list
-			System.out.println("Please choose from the following: ");
-			System.out.println("a - Enroll in a course");
-			System.out.println("d - Unenrollfrom an existing course");
-			System.out.println("r - Replacing an existing course");
-			System.out.println("b - Back to the main page");
-			System.out.print("please select the required action: ");
+				// Getting input from below list
+				System.out.println("Please choose from the following: ");
+				System.out.println("a - Enroll in a course");
+				System.out.println("d - Unenrollfrom an existing course");
+				System.out.println("r - Replacing an existing course");
+				System.out.println("b - Back to the main page");
+				System.out.print("please select the required action: ");
 
-			String action = scanner.next();
-			Courses courses = new Courses();
+				String action = scanner.next();
+				Courses courses = new Courses();
 
-			if (action.equals("a")) {
-				String home =courses.enrollment("a",studentID);
-				if (home.equals("b")){
+				if (action.equals("a")) {
+					String home =courses.enrollment(action,studentID);
+					if (home.equals("b")){
+						continue;
+					}
+				}
+				else if (action.equals("d")) {
+					String home = courses.unenrollment(action,studentID);
+					if (home.equals("b")){
+						continue;
+					}
+				}
+
+				else if (action.equals("b")) {
 					continue;
 				}
+				 else {
+					System.err.println("Wrong entry ");
+					System.out.println("--------------------------------------------------------------------------");
+				}
+			} catch (NumberFormatException e) {
+				
+				e.printStackTrace();
 			}
-
-			else if (action.equals("b")) {
-				continue;
-			}
-			 else {
-				System.err.println("Wrong entry ");
-				System.out.println("--------------------------------------------------------------------------");
-			}
+			 
 		}
 	}
 

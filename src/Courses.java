@@ -10,7 +10,7 @@ public class Courses implements CoursesData{
 	    private String duration;
 	    private String time;
 	    private String location;
-	     static Courses[] course;
+	    private static Courses[] course;
 
 
 	public  Courses(){}
@@ -23,6 +23,56 @@ public class Courses implements CoursesData{
 	        this.location=location;
 
 	    }
+		public int getCourseID() {
+			return courseID;
+		}
+	
+		public void setCourseID(int courseID) {
+			this.courseID = courseID;
+		}
+	
+		public String getName() {
+			return name;
+		}
+	
+		public void setName(String name) {
+			this.name = name;
+		}
+	
+		public String getInstructor() {
+			return instructor;
+		}
+	
+		public void setInstructor(String instructor) {
+			this.instructor = instructor;
+		}
+	
+		public String getDuration() {
+			return duration;
+		}
+	
+		public void setDuration(String duration) {
+			this.duration = duration;
+		}
+	
+		public String getTime() {
+			return time;
+		}
+	
+		public void setTime(String time) {
+			this.time = time;
+		}
+	
+		public String getLocation() {
+			return location;
+		}
+	
+		public void setLocation(String location) {
+			this.location = location;
+		}
+
+
+
 	public String readCourseDataFromXML(String courseDataFilePath) {
 		File file1 = new File(courseDataFilePath);
 		File file2 = new File("course_data_sorted.csv");
@@ -64,6 +114,10 @@ public class Courses implements CoursesData{
 		}
 		return file2.getPath();
 	}
+
+
+
+
 
 	public  void fillCourseObjectsWithData(String courseDatacsvFilePath) {
 		// creating an array of Course objects and fill each Course with the proper data
@@ -142,6 +196,10 @@ public class Courses implements CoursesData{
 		}
 		return numberOfCourses;
 	}
+
+
+
+
 	public  String enrollment(String a, String studentID){
 		Scanner scanner = new Scanner(System.in);
 		String action = a;
@@ -163,6 +221,7 @@ public class Courses implements CoursesData{
 						System.out.println("The student is Enrolled Successfully in the " +  this.course[Integer.parseInt(action)-1].name + " course");
 						break;}
 						else {
+							System.err.println("Failed to enroll:");
 							break;
 						}
 					}
@@ -173,64 +232,47 @@ public class Courses implements CoursesData{
 				  if (action.equals("b")){
 					  break;
 				  }
+				  
 
 			}
 			catch (NumberFormatException e){
 				System.err.println("Wrong choice! please enter a valid choice");
 			}
-		}return action;
+		}//scanner.close();
+		return action;
 	}
 
 
 
+	public  String unenrollment(String a, String studentID){
+		Scanner scanner = new Scanner(System.in);
+		String action = a;
+		try {
+			JSON request = new JSON();
+			System.out.println("Please enter course id:");
+			action = scanner.next();
+		while (!Objects.equals(action, "b")) {
+						String feedback = request.unenrollmentRequest(studentID,action);
+						if (feedback.equals("unenrolled")){
+						System.out.println("Unenrolled successfully from the " +  this.course[Integer.parseInt(action)-1].name + " course");
+						request.enrolledCoursesInfo(studentID);
+						}
+						System.out.println("Please enter course id:");
+						action = scanner.next();
+						
+				}
+				
+				
+			}catch (NumberFormatException e){
+				System.err.println("Wrong choice! please enter a valid choice");
+			}return action;
 
-	public int getCourseID() {
-		return courseID;
-	}
+    }
 
-	public void setCourseID(int courseID) {
-		this.courseID = courseID;
-	}
 
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
 
-	public String getInstructor() {
-		return instructor;
-	}
-
-	public void setInstructor(String instructor) {
-		this.instructor = instructor;
-	}
-
-	public String getDuration() {
-		return duration;
-	}
-
-	public void setDuration(String duration) {
-		this.duration = duration;
-	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(String time) {
-		this.time = time;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
+	
 	@Override
 	public String toString() {
 		return  this.courseID + ",  " + this.name + ",         " + this.instructor + ",          " + this.duration + ",      " + this.time + ",     " + this.location;
