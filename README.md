@@ -1,7 +1,7 @@
 # Simple-Learning-Management-System
 
 ## With the below options
-###a - Enroll in a course
-###d - Unenrollfrom an existing course
-###r - Replacing an existing course
-###b - Back to the main page
+- &nbsp;a - Enroll in a course
+- &nbsp;d - Unenrollfrom an existing course
+- &nbsp;r - Replacing an existing course
+- &nbsp;b - Back to the main page
