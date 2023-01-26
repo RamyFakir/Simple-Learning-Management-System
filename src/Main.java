@@ -1,4 +1,6 @@
-import java.io.*;
+
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 
@@ -27,68 +29,97 @@ public class Main {
 		// creating an array of Course objects and fill each Course with the proper data
 		readCourseData.fillCourseObjectsWithData(courseDatacsvFilePath);
 
-		// Craete a JSON file and put sample data
+		// Craete a JSON file and put sample data on it
 		JSON jsonFile =new JSON();
 		jsonFile.createJSONFile();
 
+		Courses courses = new Courses();
+		Scanner scanner = new Scanner(System.in);
+			String studentID="";
+			String action = "b";
+
+			// enter s to terminate the app
+			while (!action.equals("s") ) {
+
+				try  {
 
 
-		while (true) {
-			int numberOfStudents =studentData.homePage();
-			// Get Student id to show its data
-			System.out.println("Please select the required student: ");
-			try  {
-				Scanner scanner = new Scanner(System.in);
-				String studentID= scanner.next();
-				while (Integer.parseInt(studentID)>numberOfStudents ||Integer.parseInt(studentID)<1 ){
-					System.err.println("Invalid Student ID");
-					studentID= scanner.next();
+						if (action.equals("b")) {
+							// studentData.homePage() will read students data from source file and return total number of students
+							int numberOfStudents = studentData.homePage();
 
-				}
-				jsonFile.enrolledCoursesInfo(studentID);
+							// Get a specific Student id to show its data
+							System.out.print("Please select the required student: ");
+							studentID = scanner.nextLine();
 
-				// Getting input from below list
-				System.out.println("Please choose from the following: ");
-				System.out.println("a - Enroll in a course");
-				System.out.println("d - Unenrollfrom an existing course");
-				System.out.println("r - Replacing an existing course");
-				System.out.println("b - Back to the main page");
-				System.out.print("please select the required action: ");
+							// validating student id
+							while (Integer.parseInt(studentID) > numberOfStudents || Integer.parseInt(studentID) < 1) {
+								System.err.println("Invalid Student ID");
+								studentID = scanner.nextLine();
+							}
+							//Now show the enrolled courses after getting a valid student id
+							jsonFile.enrolledCoursesInfo(studentID);
 
-				String action = scanner.next();
-				Courses courses = new Courses();
+							// Getting input from below list
+							System.out.println("Please choose from the following: ");
+							System.out.println("a - Enroll in a course");
+							System.out.println("d - Unenrollfrom an existing course");
+							System.out.println("r - Replacing an existing course");
+							System.out.println("b - Back to the main page");
+							System.out.print("please select the required action: ");
+							action = scanner.nextLine();
+						}
 
-				if (action.equals("a")) {
-					String home =courses.enrollment(action,studentID);
-					if (home.equals("b")){
-						continue;
+
+						// start enrollment
+					if (action.equals("a") ){
+						System.out.println("inside a");
+						action = courses.enrollment(action, studentID);
+
 					}
-				}
-				else if (action.equals("d")) {
-					String home = courses.unenrollment(action,studentID);
-					if (home.equals("b")){
-						continue;
+
+
+						// Unenrollment
+					if (action.equals("d") ) {
+						action = courses.unenrollment(action, studentID);
 					}
+
+						//Replacement
+					if (action.equals("r") ){
+						JSON jObj = new JSON();
+						System.out.print("Please enter the course id to be replaced:");
+						action = scanner.nextLine();
+						String feedback =jObj.unenrollmentRequest(studentID, action);
+							if (!action.equals("b") && !feedback.equals("not allowed")) {
+								courses.courseReplacement(action,studentID);
+								jsonFile.enrolledCoursesInfo(studentID);
+
+								System.out.println("Please choose from the following: ");
+								System.out.println("a - Enroll in a course");
+								System.out.println("d - Unenrollfrom an existing course");
+								System.out.println("r - Replacing an existing course");
+								System.out.println("b - Back to the main page");
+								System.out.print("please select the required action: ");
+								action = scanner.nextLine();
+							}
+						}
+				} catch (NumberFormatException e) {
+
+					e.printStackTrace();
+				}catch (InputMismatchException e){
+					e.printStackTrace();
+				}catch(NoSuchElementException e){
+					e.printStackTrace();
 				}
 
-				else if (action.equals("b")) {
-					continue;
-				}
-				 else {
-					System.err.println("Wrong entry ");
-					System.out.println("--------------------------------------------------------------------------");
-				}
-			} catch (NumberFormatException e) {
-				
-				e.printStackTrace();
 			}
-			 
 		}
+		
 	}
 
+	
 
 
-}
 
 
 

@@ -21,6 +21,12 @@ public class JSON extends Student {
             JSONArray enrolledCourses1 = new JSONArray();
             JSONArray enrolledCourses2 = new JSONArray();
             JSONArray enrolledCourses3 = new JSONArray();
+            JSONArray enrolledCourses00 = new JSONArray();
+            enrolledCourses00.add(0);
+            for (int i=1; i<=super.getTotalNumberOfStudents();i++){
+
+                obj.put(i, enrolledCourses00);
+            }
             enrolledCourses1.add(1);
             enrolledCourses1.add(2);
             enrolledCourses1.add(3);
@@ -34,10 +40,13 @@ public class JSON extends Student {
             enrolledCourses3.add(2);
             enrolledCourses3.add(3);
 
+
+
             obj.put(1, enrolledCourses1);
             
             obj.put(2, enrolledCourses2);
             obj.put(3, enrolledCourses3);
+
              
 
         } catch (IOException e) {
@@ -53,6 +62,108 @@ public class JSON extends Student {
         }
          return jsonFile.getPath();
     }
+    
+    public  void getSpecificCourseData(int courseID) {
+        // creating an array of Course objects and fill each Course with the proper data
+        File readCourseData = new File("course_data_sorted.csv");
+        Scanner getNumberOfLines = null;
+        Scanner courseScanner = null;
+        try {
+            getNumberOfLines = new Scanner (readCourseData);
+            courseScanner = new Scanner(readCourseData);
+            int numberOfLines=0, i=0;
+
+            while ( getNumberOfLines.hasNextLine()) {
+                numberOfLines++;
+                getNumberOfLines.nextLine();
+            }
+
+            Courses[] course =new Courses[numberOfLines];
+            String nextLine = courseScanner.nextLine();
+            while ( courseScanner.hasNextLine()) {
+                i++;
+                String[] row = nextLine.split(",");
+                course[i] = new Courses(Integer.parseInt(row[0]), row[1], row[2], row[3], row[4],row[5]);
+                nextLine = courseScanner.nextLine();
+            }
+            
+            System.out.println(course[courseID].toString());
+            getNumberOfLines.close();
+            courseScanner.close();
+        } catch (NumberFormatException | FileNotFoundException e) {
+            e.printStackTrace();
+        }finally{
+            getNumberOfLines.close();
+            courseScanner.close();
+        }
+
+
+
+    }
+    public void enrolledCoursesInfo(String studentID)  {
+
+        File jsonFile = new File("Student course details.json");
+        FileReader readFromJSON = null;
+        JSONParser parser = new JSONParser();
+
+        try {
+            String studentData = JSON.getSpecificStudentData(studentID);
+            readFromJSON = new FileReader(jsonFile);
+            Object obj = parser.parse(readFromJSON);
+            JSONObject jsonObject = (JSONObject) obj;
+            int index=0;
+            int counter=0;
+            String b="";
+            JSONArray enrolledCourses = (JSONArray) jsonObject.get(studentID);
+            Iterator <Integer> iterator = enrolledCourses.iterator();
+            while (iterator.hasNext()) {
+               b=  String.valueOf(iterator.next());
+                counter++;
+            }
+            if (!b.equals("0")) {
+
+                System.out.println("==========================================================================");
+                System.out.println("Student details page");
+                System.out.println("==========================================================================");
+                System.out.println(studentData);
+                System.out.println("--------------------------------------------------------------------------");
+                System.out.println("Courses enrolled");
+                Iterator <Integer> iterator2 = enrolledCourses.iterator();
+                while (iterator2.hasNext()) {
+                    String  s = String.valueOf(iterator2.next());
+                    if (!s.equals("0")){
+                    index++;
+                    System.out.print(index + "- ");
+
+                    //System.out.println(s);
+                    getSpecificCourseData(Integer.parseInt(s));
+                    }
+
+                }
+                System.out.println("--------------------------------------------------------------------------");
+            } else {
+                System.out.println("==========================================================================");
+                System.out.println("Student details page");
+                System.out.println("==========================================================================");
+                System.out.println(studentData);
+                System.out.println("--------------------------------------------------------------------------");
+                System.out.println("Courses enrolled");
+                System.out.println("This student hasn't enrolled in any courses");
+                System.out.println("--------------------------------------------------------------------------");
+            }
+           // readFromJSON.close();
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+        }
+
+    }
+    
     public String enrollmentRequest(String studentID, String courseID) {
         // read the existing data first to check if the student reached the max no. of courses
         File jsonFile = new File("Student course details.json");
@@ -64,6 +175,7 @@ public class JSON extends Student {
             Object object = parser.parse(new FileReader(jsonFile));
             JSONObject obj = (JSONObject) object;
             JSONArray enrolledCourses = (JSONArray) obj.get(studentID);
+            
             Iterator <Integer> iterator = enrolledCourses.iterator();
 
             while (iterator.hasNext()) {
@@ -90,7 +202,7 @@ public class JSON extends Student {
 
             }
             else{
-                System.err.println("Students can’t enroll in more than 6 programs at the same time.");
+                System.err.println("Students can't enroll in more than 6 programs at the same time.");
                 feedback = "not allowed";
             }
           //enrolledCourses2.remove(1);
@@ -140,7 +252,7 @@ public class JSON extends Student {
 
             }
             else{
-                System.err.println("Faild to unenroll: The student as only one or no courses to unenroll from");
+                System.err.println("Faild to unenroll: The student has only one or no courses to unenroll from");
                 feedback = "not allowed";
             }
           //
@@ -153,98 +265,7 @@ public class JSON extends Student {
 
         return feedback;
     }
-
-
-    public  void getSpecificCourseData(int courseID) {
-        // creating an array of Course objects and fill each Course with the proper data
-        File readCourseData = new File("course_data_sorted.csv");
-        Scanner getNumberOfLines = null;
-        Scanner courseScanner = null;
-        try {
-            getNumberOfLines = new Scanner (readCourseData);
-            courseScanner = new Scanner(readCourseData);
-            int numberOfLines=0, i=0;
-
-            while ( getNumberOfLines.hasNextLine()) {
-                numberOfLines++;
-                getNumberOfLines.nextLine();
-            }
-
-            Courses[] course =new Courses[numberOfLines];
-            String nextLine = courseScanner.nextLine();
-            while ( courseScanner.hasNextLine()) {
-                i++;
-                String[] row = nextLine.split(",");
-                course[i] = new Courses(Integer.parseInt(row[0]), row[1], row[2], row[3], row[4],row[5]);
-                nextLine = courseScanner.nextLine();
-            }
-            //printing sample value
-            System.out.println(course[courseID].toString());
-            getNumberOfLines.close();
-            courseScanner.close();
-        } catch (NumberFormatException | FileNotFoundException e) {
-            e.printStackTrace();
-        }finally{
-            getNumberOfLines.close();
-            courseScanner.close();
-        }
-
-
-
-    }
-    public void enrolledCoursesInfo(String studentID)  {
-
-        File jsonFile = new File("Student course details.json");
-        FileReader readFromJSON = null;
-        JSONParser parser = new JSONParser();
-
-        try {
-            String studentData = JSON.getSpecificStudentData(studentID);
-            readFromJSON = new FileReader(jsonFile);
-            Object obj = parser.parse(readFromJSON);
-            JSONObject jsonObject = (JSONObject) obj;
-            int index=0;
-
-            if (jsonObject.get(studentID) != null) {
-                JSONArray enrolledCourses = (JSONArray) jsonObject.get(studentID);
-                Iterator <Integer> iterator = enrolledCourses.iterator();
-                System.out.println("==========================================================================");
-                System.out.println("Student details page");
-                System.out.println("==========================================================================");
-                System.out.println(studentData);
-                System.out.println("--------------------------------------------------------------------------");
-                System.out.println("Courses enrolled");
-
-                while (iterator.hasNext()) {
-                    index++;
-                    System.out.print(index + "- ");
-                    String s = String.valueOf(iterator.next());
-                    //System.out.println(s);
-                    getSpecificCourseData(Integer.parseInt(s));
-
-                }
-                System.out.println("--------------------------------------------------------------------------");
-            } else {
-                System.out.println("==========================================================================");
-                System.out.println("Student details page");
-                System.out.println("==========================================================================");
-                System.out.println(studentData);
-                System.out.println("--------------------------------------------------------------------------");
-                System.out.println("Courses enrolled");
-                System.out.println("This student hasn't enrolled in any courses");
-                System.out.println("--------------------------------------------------------------------------");
-            }
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-
-        }
-
-    }
+   
     @Override
     public String toString() {
         return "Name: " + super.getName() + "      Grade: " + super.getAddress() + "     Email: " + super.getEmail();

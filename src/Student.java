@@ -10,6 +10,7 @@ public class Student extends Courses{
     private String address;
     private String region;
     private String country;
+    private static int totalNumberOfStudents;
 
     public  Student(){}
     public  Student (int studentID,String name,int grade,String email,String address,String region,String country){
@@ -28,6 +29,14 @@ public class Student extends Courses{
         this.email=email;
         this.address=address;
 
+    }
+
+    public int getTotalNumberOfStudents() {
+        return totalNumberOfStudents;
+    }
+
+    public void setTotalNumberOfStudents(int totalNumberOfStudents) {
+        this.totalNumberOfStudents = totalNumberOfStudents;
     }
 
     public int getStudentID() {
@@ -108,6 +117,7 @@ public class Student extends Courses{
                 nextLine = studentScanner.nextLine();
                 String[] row = nextLine.split(",");
                 student[i] = new Student(Integer.parseInt(row[0]), row[1], Integer.parseInt(row[2]), row[3], row[4]);
+                totalNumberOfStudents++;
             }
             //printing sample value
 //        System.out.println(student[10].toString());

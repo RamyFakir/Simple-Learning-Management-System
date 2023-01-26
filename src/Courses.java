@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.Objects;
 import java.util.Scanner;
 
+
 public class Courses implements CoursesData{
 	
 	 private int courseID;
@@ -176,10 +177,11 @@ public class Courses implements CoursesData{
 			    scanner.nextLine();
 				numberOfCourses++;
 			}
+			scanner.close();
 			line = readBuf.readLine();
 			while (line != null) {
 				row = line.split(",");
-
+				
 					System.out.printf("%-8s", row[0] + ",");
 					System.out.printf("%-30s", row[1] + ",");
 					System.out.printf("%-25s", row[2] + ",");
@@ -187,6 +189,7 @@ public class Courses implements CoursesData{
 					System.out.printf("%-18s", row[4] + ",");
 					System.out.printf(",%s", row[5]);
 					System.out.println("\n");
+				
 				line = readBuf.readLine();
 
 			}
@@ -196,12 +199,12 @@ public class Courses implements CoursesData{
 		}
 		return numberOfCourses;
 	}
-
+	
 
 
 
 	public  String enrollment(String a, String studentID){
-		Scanner scanner = new Scanner(System.in);
+		Scanner scan = new Scanner(System.in);
 		String action = a;
 		Courses courses = new Courses();
 		int numberOfCourses = courses.showCoursesData();
@@ -211,7 +214,7 @@ public class Courses implements CoursesData{
 			System.out.println("Enter b to go back to the home page");
 			System.out.print("Please select the required action:");
 
-			action = scanner.next();
+			action = scan.nextLine();
 			try {
 				for (int i = 1; i <= numberOfCourses; i++) {
 					if (Integer.parseInt(action) == i) {
@@ -221,7 +224,7 @@ public class Courses implements CoursesData{
 						System.out.println("The student is Enrolled Successfully in the " +  this.course[Integer.parseInt(action)-1].name + " course");
 						break;}
 						else {
-							System.err.println("Failed to enroll:");
+							//System.err.println("Failed to enroll:");
 							break;
 						}
 					}
@@ -229,28 +232,29 @@ public class Courses implements CoursesData{
   				if (Integer.parseInt(action) > numberOfCourses || Integer.parseInt(action) < 1) {
 					System.err.println("Failed to enroll: The course with id =" + Integer.parseInt(action) + " is not exist");
 				}
-				  if (action.equals("b")){
-					  break;
-				  }
-				  
+				if (action.equals("b")){
+					break;
+				}
 
 			}
 			catch (NumberFormatException e){
 				System.err.println("Wrong choice! please enter a valid choice");
 			}
-		}//scanner.close();
+
+		}
+
 		return action;
 	}
 
 
 
 	public  String unenrollment(String a, String studentID){
-		Scanner scanner = new Scanner(System.in);
+		Scanner scan = new Scanner(System.in);
 		String action = a;
 		try {
 			JSON request = new JSON();
 			System.out.println("Please enter course id:");
-			action = scanner.next();
+			action = scan.next();
 		while (!Objects.equals(action, "b")) {
 						String feedback = request.unenrollmentRequest(studentID,action);
 						if (feedback.equals("unenrolled")){
@@ -258,18 +262,89 @@ public class Courses implements CoursesData{
 						request.enrolledCoursesInfo(studentID);
 						}
 						System.out.println("Please enter course id:");
-						action = scanner.next();
-						
-				}
-				
+						action = scan.next();
+				}	
 				
 			}catch (NumberFormatException e){
 				System.err.println("Wrong choice! please enter a valid choice");
-			}return action;
+			}
+
+			return action;
 
     }
 
+	
+	
+	
+	
+	/////////////////////replacement///////////////////////////
+	
+	public void courseReplacement( String courseToUnenroll, String studentID){
+		JSON request = new JSON();
+		Scanner replaceTo = new Scanner(System.in);
+    	String courseToEnroll ="";
+		File file = new File("course_data_sorted.csv");
+		FileReader readFromCVS = null;
+		BufferedReader readBuf;
+		String line;
+		try {
+			readFromCVS = new FileReader(file);
+			readBuf = new BufferedReader(readFromCVS);
+			line = "";
+			Scanner scaneCourses =new Scanner(file);
+			System.out.println("Available courses");
+			System.out.println("=======================================================================================");
+			String[] row = null;
+			System.out.println("id,      course name,                 instructor,         Course duration ,    Course time,        location ");
+			System.out.println("---------------------------------------------------------------------------------------");
 
+			line = readBuf.readLine();
+			while (line != null) {
+				row = line.split(",");
+				if (row[0].equals(courseToUnenroll)){
+					line = readBuf.readLine();
+					continue;
+
+				}
+				else{
+					System.out.printf("%-8s", row[0] + ",");
+					System.out.printf("%-30s", row[1] + ",");
+					System.out.printf("%-25s", row[2] + ",");
+					System.out.printf("%-18s", row[3] + ",");
+					System.out.printf("%-18s", row[4] + ",");
+					System.out.printf(",%s", row[5]);
+					System.out.println("\n");
+				
+				line = readBuf.readLine();
+			}
+
+			}
+			System.out.println("---------------------------------------------------------------------------------------");
+
+				System.out.print("Please enter the required course id to replace:");
+				courseToEnroll = replaceTo.next();
+			    String feedback="";
+//				String feedback =request.unenrollmentRequest(studentID,courseToUnenroll);
+//				if (feedback.equals("unenrolled")){
+				System.out.print("Course replaced successfully from " +  this.course[Integer.parseInt(courseToUnenroll)-1].name + " to ");
+				
+				//}
+				feedback = request.enrollmentRequest(studentID,courseToEnroll);
+				if (feedback.equals("enrolled")){
+					System.out.println(this.course[Integer.parseInt(courseToEnroll)-1].name );
+							
+		        }
+			//replaceTo.close();
+			scaneCourses.close();
+		}catch (FileNotFoundException e){
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+		
+		
+	   }
 
 
 	
